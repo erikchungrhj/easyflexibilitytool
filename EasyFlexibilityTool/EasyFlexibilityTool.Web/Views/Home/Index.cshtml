@@ -1,0 +1,65 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<!-- Swiper -->
+<section class="text-center">
+    <!-- Swiper -->
+    <div class="swiper-container swiper-container--visible  swiper-slider"
+         data-autoplay="false"
+         data-loop="false">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide" data-slide-bg="@Url.Content("~/Content/Images/theme/carousel_1.jpg")">
+                <div class="swiper-slide-caption" style="margin-top: 150px">
+                    @*<h1>
+                        Master your splits
+                    </h1>
+                    <p class="small text-uppercase montserrat letter-spacing-big">
+                        We're always happy to see new faces!
+                    </p>*@
+                    @if (Request.IsAuthenticated)
+                    {
+                        @Html.ActionLink("Get Full 180º Splits! Start here", "Index", "AngleMeasurement", null, new { @class = "btn btn-lg btn-primary" })
+                    }
+                    else
+                    {
+                        @Html.ActionLink("Click here if you are already registered!", "Login", "Account", null, new {@class = "btn btn-lg btn-primary"})
+                        <br>
+                        @Html.ActionLink("First time users click here!", "Index", "AngleMeasurement", null, new { @class = "btn btn-lg btn-primary" })
+                    }
+                </div>
+            </div>
+            @*<div class="swiper-slide" data-slide-bg="@Url.Content("~/Content/Images/theme/carousel_2.jpg")">
+                <div class="swiper-slide-caption">
+                    <h1>
+                        LIKE TO RUN?
+                    </h1>
+                    <p class="small text-uppercase montserrat letter-spacing-big">
+                        Come out and run with us!
+                    </p>
+                    @Html.ActionLink("Get Full 180º Splits! Start here", "Index", "AngleMeasurement", null, new { @class = "btn btn-lg btn-primary" })
+                </div>
+            </div>*@
+            @*<div class="swiper-slide" data-slide-bg="@Url.Content("~/Content/Images/theme/carousel_3.jpg")">
+                <div class="swiper-slide-caption">
+                    <h1>
+                        Fast as the wind
+                    </h1>
+                    <p class="small text-uppercase montserrat letter-spacing-big">
+                        Keeping fit and having fun
+                    </p>
+                    @Html.ActionLink("Get Full 180º Splits! Start here", "Index", "AngleMeasurement", null, new { @class = "btn btn-lg btn-primary" })
+                </div>
+            </div>*@
+        </div>
+        <!-- Swiper Pagination -->
+        <div class="swiper-pagination"></div>
+        <!-- Swiper Navigation -->
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <!-- Swiper Scrollbar -->
+        <div class="swiper-scrollbar"></div>
+    </div>
+    <!-- END Swiper -->
+</section>
+<!-- END Swiper-->

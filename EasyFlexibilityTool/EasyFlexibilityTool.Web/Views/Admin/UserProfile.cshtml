@@ -1,0 +1,197 @@
+﻿@using EasyFlexibilityTool.Web.Models
+@using EasyFlexibilityTool.Data.Model
+@model AngleMeasurementModel
+@{
+    ViewBag.Title = "UserProfile";
+    var user = ViewBag.User as ApplicationUser;
+    var categories = ViewBag.AngleMeasurementCategories as List<AngleMeasurementCategoryModel>;
+}
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+
+    .user-info {
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px 4px 1px 4px;
+        border-color: darkseagreen darkgreen darkseagreen darkgreen;
+        padding: 10px;
+        font-size: 16px;
+    }
+
+    .user-info-label {
+        width: 80px;
+        margin-right: 20px;
+        text-align: right;
+        font-weight: normal;
+        color: darkgoldenrod;
+    }
+
+    .user-info-value {
+        font-weight: 600;
+    }
+
+    .summary-measurement-label {
+        text-align: right;
+        font-size: 16px;
+        color: darkgoldenrod;
+    }
+
+    .summary-measurement-value {
+        font-size: 16px;
+        font-weight: 700;
+    }
+</style>
+
+@if (user != null)
+{
+    <div style="margin:10px;">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="alert-success user-info">
+                    <div>
+                        <label class="user-info-label">Name:</label>
+                        <span class="user-info-value">@user.UserName</span>
+                    </div>
+                    <div>
+                        <label class="user-info-label">Email:</label>
+                        <span class="user-info-value">@user.Email</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <button class="btn btn-sm btn-success" style="padding-left:20px; padding-right:20px;" onclick="window.history.back();">
+                    <span class="glyphicon glyphicon-arrow-left"></span> Back
+                </button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="well">
+                    <label>Angle Measurement Category</label>
+                    <select class="form-control" id="angleMeasurementCategory">
+                        @if (categories != null)
+                        {
+                            foreach (var category in categories)
+                            {
+                                <option value="@category.Id">@category.Name</option>
+                            }
+                        }
+                    </select>
+                    <div class="row">
+                        <div class="col-md-6 summary-measurement-label">Starting Point:</div>
+                        <div class="col-md-6 summary-measurement-value" id="startingPoint"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 summary-measurement-label">Current Level:</div>
+                        <div class="col-md-6 summary-measurement-value" id="currentLevel"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 summary-measurement-label">Rate Of Progress:</div>
+                        <div class="col-md-6 summary-measurement-value" id="rateOfProgress"></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 summary-measurement-label">Estimated Date:</div>
+                        <div class="col-md-6 summary-measurement-value" id="estimatedSideSplitDate"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="well">
+                    <div id="angleMeasurementsGrid"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section scripts{
+        <script type="text/javascript">
+            $("#angleMeasurementCategory").change(function () {
+                $("#angleMeasurementsGrid").jsGrid("loadData");
+            });
+
+            $("#angleMeasurementsGrid").jsGrid({
+                width: "100%",
+                filtering: false,
+                sorting: false,
+                paging: false,
+                autoload: true,
+                selecting: false,
+
+                controller: {
+                    loadData: function (filter) {
+                        return $.get({
+                            url: "/api/anglemeasurement/anglemeasurementofuser?userId=@user.Id&categoryId=" + $("#angleMeasurementCategory").val(),
+                            data: filter,
+                            dataType: "json"
+                        }).done(function (data) {
+                            if (data && data.length) {
+                                $("#startingPoint").text(data[0].@Html.IdFor(m => m.Angle) + "º");
+                                $("#currentLevel").text(data[data.length - 1].@Html.IdFor(m => m.Angle) + "º");
+                                var progress = (data[data.length - 1].@Html.IdFor(m => m.Angle) - data[0].@Html.IdFor(m => m.Angle)) / data.length;
+                                $("#rateOfProgress").text(Math.round(progress * 100) / 100 + "º");
+                                if (progress > 0) {
+                                    var degsCount = 180 - data[data.length - 1].@Html.IdFor(m => m.Angle);
+                                    var daysCount = Math.ceil(degsCount / progress) * 2;
+                                    var lastDate = moment(new Date(data[data.length - 1].@Html.IdFor(m => m.DateTimeStamp)));
+                                    var estDate = lastDate.add(daysCount, "d");
+                                    $("#estimatedSideSplitDate").text(estDate.format("LL"));
+                                }
+                            }
+                        });
+                    }
+                },
+
+                fields: [
+                    {
+                        name: "@Html.IdFor(m => m.DateTimeStamp)",
+                        title: "Date",
+                        type: "text",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 10,
+                        itemTemplate: function (value) {
+                            return moment(new Date(value)).format("LL");
+                        }
+                    }, {
+                        name: "@Html.IdFor(m => m.Angle)",
+                        title: "Angle",
+                        type: "text",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 5,
+                        itemTemplate: function (value) {
+                            return value + "&deg;";
+                        }
+                    }, {
+                        name: "@Html.IdFor(m => m.Id)",
+                        title: "Photo",
+                        type: "text",
+                        align: "center",
+                        width: 10,
+                        sorting: false,
+                        itemTemplate: function (value) {
+                            var photoUrl = "@AppSettings.StorageBaseUrl@AppSettings.StoragePhotoContainerName/" + value + ".@AppSettings.StorageBlobExtension" + "?dummy=" + new Date().getTime();
+                            return $("<a/>", {
+                                html: "<img src='" + photoUrl + "' style='max-width:80px; max-height:60px;' />",
+                                href: "javascript:void(0)",
+                                click: function () {
+                                    var options = {
+                                        title: "<img src='" + photoUrl + "'>",
+                                        html: true
+                                    };
+                                    swal(options);
+                                }
+                            });
+                        }
+                    }
+                ]
+            });
+        </script>
+    }
+}

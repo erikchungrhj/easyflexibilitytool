@@ -1,0 +1,727 @@
+﻿@using EasyFlexibilityTool.Web.Models
+@model AngleMeasurementModel
+@{
+    ViewBag.Title = "Measurement";
+    var categories = ViewBag.Categories as List<AngleMeasurementCategoryModel>;
+
+}
+
+<section class="well-xs">
+    <div class="container relative">
+        <div class="row text-center">
+            <h2 class="relative wow fadeInRight" style="visibility: visible; animation-name: fadeInRight;">
+                @ViewBag.Title
+                <span class="devider devider-md devider-default devider-position-left devider-position-bottom"></span>
+            </h2>
+        </div>
+        <div class="row row-offset-1">
+            <div class="col-lg-6">
+                <div class="wow fadeInRight" style="visibility: visible; animation-name: fadeInRight;">
+                    <div id="div_canvas" style="width: 602px; height: 317px; border: black 1px dashed"></div>
+                </div>
+            </div>
+            <div class="col-lg-6 inset-6">
+                <form class="rd-mailform" id="form_inputs" style="margin-top: 0;">
+                    <ol class="numbered-list">
+                        <li class="wow fadeInRight" data-wow-delay=".55s" style="visibility: visible; animation-delay: 0.55s; animation-name: fadeInRight;">
+                            <p>
+                                <label for="input_photo">
+                                    <span class="btn btn-md btn-default">Load Your Split Picture</span>
+                                </label>
+                                <input id="input_photo" name="input_photo" type="file" accept="image/*" style="width: 350px; visibility: hidden; position: absolute;">
+                            </p>
+                        </li>
+                        <li class="wow fadeInRight" data-wow-delay=".65s" style="visibility: visible; animation-delay: 0.65s; animation-name: fadeInRight;">
+                            <p>
+                                Drag the marks to the feet and pelvis center to get the angle measurement
+                            </p>
+                        </li>
+                        <li class="wow fadeInRight" data-wow-delay=".75s" style="visibility: visible; animation-delay: 0.75s; animation-name: fadeInRight;">
+                            <p>Select category:</p>
+                            <fieldset>
+                                <label data-add-placeholder="" class="mfInput">
+                                    @Html.DropDownListFor(m => new AngleMeasurementPostModel().CategoryId, categories.Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() }))
+                                    @Html.ValidationMessageFor(m => new AngleMeasurementPostModel().CategoryId)
+                                </label>
+                            </fieldset>
+                        </li>
+                        <li class="wow fadeInRight" data-wow-delay=".85s" style="visibility: visible; animation-delay: 0.85s; animation-name: fadeInRight;">
+                            <p>Set the measurement date:</p>
+                            <fieldset>
+                                <label data-add-placeholder="" class="mfInput">
+                                    @Html.EditorFor(m => new AngleMeasurementPostModel().Date, new { htmlAttributes = new { required = "required", @readonly = "readonly", data_val_required = "The Date field is required.", placeholder = Html.DisplayNameFor(m => new AngleMeasurementPostModel().Date) } })
+                                    @Html.ValidationMessageFor(m => new AngleMeasurementPostModel().Date)
+                                </label>
+                            </fieldset>
+                        </li>
+                        @if (!Request.IsAuthenticated)
+                        {
+                            <li class="wow fadeInRight" data-wow-delay=".95s" style="visibility: visible; animation-delay: 0.95s; animation-name: fadeInRight;">
+                                <p>
+                                    Fill the form below:
+                                </p>
+                                <fieldset>
+                                    <label data-add-placeholder="" class="mfInput">
+                                        @Html.EditorFor(m => new AngleMeasurementPostModel().Email, new { htmlAttributes = new { required = "required", data_val_required = "The Email field is required.", placeholder = Html.DisplayNameFor(m => new AngleMeasurementPostModel().Email) } })
+                                        @Html.ValidationMessageFor(m => new AngleMeasurementPostModel().Email)
+                                    </label>
+                                    @*<label data-add-placeholder="" class="mfInput">
+                                            @Html.EditorFor(m => new AngleMeasurementPostModel().NewPassword, new {htmlAttributes = new {placeholder = "Password"} })
+                                            @Html.ValidationMessageFor(m => new AngleMeasurementPostModel().NewPassword)
+                                        </label>
+
+                                        <label data-add-placeholder="" class="mfInput">
+                                            @Html.EditorFor(m => new AngleMeasurementPostModel().ConfirmPassword, new {htmlAttributes = new { placeholder = "Confirm Password"}})
+                                            @Html.ValidationMessageFor(m => new AngleMeasurementPostModel().ConfirmPassword)
+                                        </label>*@
+                                </fieldset>
+                            </li>
+                        }
+                        <li class="wow fadeInRight" data-wow-delay=".95s" style="visibility: visible; animation-delay: 0.95s; animation-name: fadeInRight;">
+                            <button type="button" id="button_save" disabled class="btn btn-md btn-default">
+                                @if (Request.IsAuthenticated)
+                                {
+                                    @:Save Result
+                                }
+                                else
+                                {
+                                    @:Get your split angle
+                                }
+                            </button>
+                        </li>
+                    </ol>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+@if (Request.IsAuthenticated)
+{
+    <section class="well-xs">
+        <div class="container relative">
+            <h2 class="relative wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+                Your
+                @Html.DropDownList("category_grid_filter", categories.Select(c => new SelectListItem { Text = c.Name, Value = c.Id.ToString() }), new { @class = "resize" })
+                Results
+                <span class="devider devider-md devider-default devider-position-left devider-position-bottom"></span>
+            </h2>
+
+            <div class="row row-offset-1 flow-offset-1 wow fadeInUp" style="visibility: visible; animation-name: fadeInUp;">
+                <div class="col-md-8">
+                    <button type="button" id="button_share" class="btn btn-md btn-facebook" disabled="true">
+                        <span class="fa fa-facebook icon"></span> Share
+                    </button>
+
+                    <div style="margin-top: 20px;" id="grid_angle_measurements"></div>
+                </div>
+                <div class="col-md-4">
+                    <article class="news-post wow fadeInLeft text-right" data-wow-delay=".85s" style="visibility: visible; animation-delay: 0.85s; animation-name: fadeInLeft;">
+                        <h6>
+                            <label>Starting point:</label>
+                            <span id="span_start_angle" style="font-weight: bold;"></span>
+                        </h6>
+                        <h6>
+                            <label>Current level:</label>
+                            <span id="span_current_level" style="font-weight: bold;"></span>
+                        </h6>
+                        <h6>
+                            <label>Rate of progress:</label>
+                            <span id="span_progress" style="font-weight: bold;"></span>
+                        </h6>
+                        <h6>
+                            <label>Estimated <span id="span_estimation_category"></span> date:</label>
+                            <span id="span_estimation" style="font-weight: bold;"></span>
+                        </h6>
+                    </article>
+
+                    @Html.HiddenFor(m => m.Angle)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div id="modal_photo" style="display: none;">
+        <img id="img_modal_photo" />
+    </div>
+}
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        $(function() {
+            @if (Request.IsAuthenticated)
+            {
+                <text>
+
+                    $('#grid_angle_measurements')
+                        .jsGrid({
+                            width: '100%',
+
+                            filtering: false,
+                            sorting: true,
+                            paging: true,
+                            autoload: false,
+                            selecting: false,
+
+                            pageSize: 10,
+                            pageButtonCount: 5,
+
+                            controller: {
+                                loadData: function(filter) {
+                                    return $.get({
+                                            url: `/api/anglemeasurement?categoryId=${$('#category_grid_filter').val()}`,
+                                            data: filter,
+                                            dataType: 'json'
+                                        })
+                                        .done(function(data) {
+                                            if (data && data.length) {
+                                                $('#button_share').prop('disabled', false);
+                                                $('#span_start_angle').text(data[0].@Html.IdFor(m => m.Angle) + 'º');
+                                                $('#span_current_level').text(data[data.length - 1].@Html.IdFor(m => m.Angle) + 'º');
+                                                var progress = (data[data.length - 1].@Html.IdFor(m => m.Angle) - data[0].@Html.IdFor(m => m.Angle)) / data.length;
+                                                $('#span_progress').text(Math.round(progress * 100) / 100 + 'º');
+
+                                                if (progress > 0) {
+                                                    var degsCount = 180 - data[data.length - 1].@Html.IdFor(m => m.Angle);
+                                                    var daysCount = Math.ceil(degsCount / progress) * 2;
+                                                    var lastDate = moment(new Date(data[data.length - 1].@Html.IdFor(m => m.DateTimeStamp)));
+                                                    var estDate = lastDate.add(daysCount, 'd');
+
+                                                    $('#span_estimation').text(estDate.format('LL'));
+                                                }
+                                            } else {
+                                                $('#button_share').prop('disabled', true);
+                                            }
+                                        });
+                                }
+                            },
+
+                            fields: [
+                                {
+                                    name: '@Html.IdFor(m => m.Id)',
+                                    title: '',
+                                    type: 'action',
+                                    align: 'center',
+                                    width: 1,
+                                    sorting: false,
+                                    itemTemplate: function(value) {
+                                        return `<a class="btn btn-danger" href="javascript:void(0);" onclick="deleteMeasurement('${value}');return false;"><i class="fa fa-trash-o fa-lg"></i></a>`;
+                                    }
+                                },
+                                {
+                                    name: '@Html.IdFor(m => m.DateTimeStamp)',
+                                    title: '@Html.DisplayNameFor(m => m.DateTimeStamp)',
+                                    type: 'text',
+                                    align: 'center',
+                                    width: 110,
+                                    itemTemplate: function(value) {
+                                        return moment(new Date(value)).format('LL');
+                                    }
+                                },
+                                {
+                                    name: '@Html.IdFor(m => m.Angle)',
+                                    title: '@Html.DisplayNameFor(m => m.Angle)',
+                                    type: 'number',
+                                    width: 40,
+                                    align: 'center',
+                                    itemTemplate: function(value) {
+                                        return value + '&deg;';
+                                    }
+                                },
+                                {
+                                    name: '@Html.IdFor(m => m.Id)',
+                                    title: 'Photo',
+                                    type: 'text',
+                                    align: 'center',
+                                    width: 40,
+                                    sorting: false,
+                                    itemTemplate: function(value) {
+                                        var photoUrl = '@AppSettings.StorageBaseUrl@AppSettings.StoragePhotoContainerName/' + value + '.@AppSettings.StorageBlobExtension' + '?dummy=' + new Date().getTime();
+                                        return `<a href="javascript:void(0);" onclick="showModal('${photoUrl}')"><img data-toggle="modal" data-target="#modal_photo" width="70" src="${photoUrl}"></img></a>`;
+                                    }
+                                }
+                            ]
+                        });
+
+                    $('#category_grid_filter')
+                        .change(function() {
+                            $('#span_estimation_category').html($('#category_grid_filter>option:selected').html());
+                            $('#grid_angle_measurements').jsGrid('loadData');
+                        });
+
+                    $('#button_share')
+                        .click(function() {
+                            showWaitingWindow();
+                            $.get({
+                                    url: '/api/anglemeasurement/getprogress',
+                                    dataType: 'json'
+                                })
+                                .done(function(data) {
+                                    if (data && data.length) {
+                                        FB.ui({
+                                                method: 'feed',
+                                                mobile_iframe: true,
+                                                picture: data[1],
+                                                link: '@Request.Url.AbsoluteUri.Replace(Request.Url.PathAndQuery, string.Empty)',
+                                                name: 'EasyFlexibility',
+                                                description: data[0],
+                                                caption: '@Request.Url.Authority',
+                                                hashtag: "#easyflexibility"
+                                            },
+                                            function(response) {
+                                                debugger;
+                                            });
+                                    }
+                                })
+                                .always(function() {
+                                    hideWaitingWindow();
+                                });
+                        });
+
+                </text>
+            }
+
+            initCanvas();
+            var datepicker = $('#@Html.IdFor(m => new AngleMeasurementPostModel().Date)').datepicker({maxDate: 0, minDate: -14});
+            //se default value
+            datepicker.datepicker('setDate', new Date());
+        });
+
+        function showModal(imgUrl) {
+            if (imgUrl) {
+                $('#img_modal_photo').attr('src', imgUrl);
+                $('#modal_photo').modal();
+            }
+        }
+
+        function deleteMeasurement(id) {
+            if (confirm('Are you sure to delete this item?')) {
+                showWaitingWindow();
+                $.ajax({
+                    url: '/api/anglemeasurement/' + id,
+                    type: 'DELETE'
+                })
+                .fail(function (data) {
+                    showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);;
+                })
+                .done(function (data) {
+                    showSuccessNotification('Measurement has been deleted successfully');
+                    $('#grid_angle_measurements').jsGrid('loadData');
+                })
+                .always(function () {
+                    hideWaitingWindow();
+                });
+            }
+        }
+
+        function initCanvas() {
+            $('#input_photo')
+                .change(function () {
+                    loadPhoto();
+                });
+
+            $('#button_save')
+                .click(function () {
+                    @if (Request.IsAuthenticated)
+                    {
+                        @:saveResult();
+                    }
+                    else
+                    {
+                        @:saveAnonymResult();
+                    }
+                });
+
+            var canvasWidth = $('#div_canvas').width();
+            var canvasHeight = $('#div_canvas').height();
+
+            var stage = new Konva.Stage({
+                container: 'div_canvas',
+                width: canvasWidth,
+                height: canvasHeight
+            });
+
+            var imageLayer = new Konva.Layer();
+            var wedgeLayer = new Konva.Layer();
+            var lineLayer = new Konva.Layer();
+            var textLayer = new Konva.Layer();
+            var anchorsLayer = new Konva.Layer();
+
+            // keep wedge insync with the lines
+            anchorsLayer.on('beforeDraw',
+                function () {
+                    if (anchorsLayer.children.length === 3) {
+                        buildAngle();
+                    }
+                });
+
+            var angleText = new Konva.Text({
+                text: '',
+                fontSize: 30,
+                fontStyle: 'bold',
+                fontFamily: 'Tahoma',
+                fill: 'red',
+                stroke: 'white',
+                strokeWidth: 1.3,
+                shadowColor: 'black'
+            });
+            textLayer.add(angleText);
+
+            var angleLine = new Konva.Line({
+                dash: [10, 10],
+                strokeWidth: 2,
+                stroke: 'red',
+                lineCap: 'round',
+                id: 'angleLine',
+                opacity: 0.7,
+                points: [0, 0]
+            });
+            lineLayer.add(angleLine);
+
+            var isPhotoLoaded = false;
+            var photoImage;
+
+            stage.add(imageLayer);
+            stage.add(wedgeLayer);
+            stage.add(lineLayer);
+            stage.add(textLayer);
+            stage.add(anchorsLayer);
+
+            function measureAngle() {
+                if (wedgeLayer.children.length > 0) {
+                    var angle = wedgeLayer.children[0].attrs.angle;
+
+                    if (angle < 0) {
+                        angle = 360 + angle;
+                    }
+
+                    var textOffsetY = -50;
+                    var textOffsetX = -50;
+                    if (anchorsLayer.children[1].attrs.y < 50) {
+                        textOffsetY = 50;
+                    }
+
+                    if (anchorsLayer.children[1].attrs.x < 50) {
+                        textOffsetX = -anchorsLayer.children[1].attrs.x;
+                    }
+                    else if (anchorsLayer.children[1].attrs.x > (canvasWidth - 70)) {
+                        textOffsetX = -120 + (canvasWidth - anchorsLayer.children[1].attrs.x);
+                    }
+
+                    var value = Math.round(angle * 100) / 100;
+                    textLayer.children[0].text(value + 'º');
+                    textLayer.children[0].x(anchorsLayer.children[1].attrs.x + textOffsetX);
+                    textLayer.children[0].y(anchorsLayer.children[1].attrs.y + textOffsetY);
+
+                    @if (Request.IsAuthenticated)
+                    {
+                    <text>
+                        textLayer.draw();
+                        $('#@Html.IdFor(m => m.Angle)').val(value);
+                    </text>
+                    }
+                }
+            }
+
+            function resetAnchors() {
+                if (anchorsLayer.children && anchorsLayer.children.length > 0) {
+                    anchorsLayer.children[0].x(50);
+                    anchorsLayer.children[0].y(canvasHeight / 2);
+
+                    anchorsLayer.children[1].x(canvasWidth / 2);
+                    anchorsLayer.children[1].y(canvasHeight / 2);
+
+                    anchorsLayer.children[2].x(canvasWidth - 50);
+                    anchorsLayer.children[2].y(canvasHeight / 2);
+
+                    anchorsLayer.draw();
+                }
+            }
+
+            function drawAngleLine() {
+                angleLine.setPoints([
+                    anchorsLayer.children[0].attrs.x,
+                    anchorsLayer.children[0].attrs.y,
+                    anchorsLayer.children[1].attrs.x,
+                    anchorsLayer.children[1].attrs.y,
+                    anchorsLayer.children[2].attrs.x,
+                    anchorsLayer.children[2].attrs.y
+                ]);
+
+                lineLayer.draw();
+            }
+
+            function drawAngleWedge() {
+                function getVector(x1, y1, x2, y2) {
+                    var vector = { x: (x2 - x1), y: (y2 - y1) };
+                    return vector;
+                }
+
+                function getAngleDeg(vector1, vector2) {
+                    var cos = (vector1.x * vector2.x + vector1.y * vector2.y) / (Math.sqrt(vector1.x * vector1.x + vector1.y * vector1.y) * Math.sqrt(vector2.x * vector2.x + vector2.y * vector2.y));
+                    var angleRad = Math.acos(cos);
+                    var angleDeg = angleRad * 180 / Math.PI;
+                    if (vector2.y < 0) {
+                        angleDeg = 360 - angleDeg;
+                    }
+
+                    return angleDeg;
+                }
+
+                var vX = getVector(anchorsLayer.children[1].attrs.x,
+                    anchorsLayer.children[1].attrs.y,
+                    anchorsLayer.children[1].attrs.x + 10,
+                    anchorsLayer.children[1].attrs.y);
+
+                var v0 = getVector(anchorsLayer.children[1].attrs.x,
+                    anchorsLayer.children[1].attrs.y,
+                    anchorsLayer.children[0].attrs.x,
+                    anchorsLayer.children[0].attrs.y);
+
+                var v2 = getVector(anchorsLayer.children[1].attrs.x,
+                    anchorsLayer.children[1].attrs.y,
+                    anchorsLayer.children[2].attrs.x,
+                    anchorsLayer.children[2].attrs.y);
+
+                var angleDeg2 = getAngleDeg(vX, v2);
+                var angleDeg0 = getAngleDeg(vX, v0);
+
+                if (wedgeLayer.children.length > 0) {
+                    wedgeLayer.children[0].destroy();
+                }
+
+                var wedge = new Konva.Wedge({
+                    x: anchorsLayer.children[1].attrs.x,
+                    y: anchorsLayer.children[1].attrs.y,
+                    radius: 50,
+                    angle: angleDeg0 - angleDeg2,
+                    stroke: 'red',
+                    strokeWidth: 3,
+                    opacity: 0.7,
+                    rotation: angleDeg2
+                });
+
+                wedgeLayer.add(wedge);
+
+                wedgeLayer.draw();
+            }
+
+            function loadPhoto() {
+                var file, fileReader;
+
+                var input = document.getElementById('input_photo');
+                if (!input) {
+                    alert('Could not find the file input element.');
+                } else if (!input.files) {
+                    alert('This browser does not seem to support the "files" property of file inputs.');
+                } else if (!input.files[0]) {
+                    alert('Please select a file');
+                } else {
+                    file = input.files[0];
+                    fileReader = new FileReader();
+                    fileReader.onload = createImage;
+                    fileReader.readAsDataURL(file);
+                }
+
+                function createImage() {
+                    photoImage = new Image();
+                    photoImage.onload = imageLoaded;
+                    photoImage.src = fileReader.result;
+                }
+
+                function imageLoaded() {
+                    EXIF.getData(this);
+                    var orientation = EXIF.getTag(this, 'Orientation');
+                    drawPhoto(orientation);
+                    isPhotoLoaded = true;
+                }
+            }
+
+            function drawPhoto(orientation) {
+                if (imageLayer.children && imageLayer.children.length > 0) {
+                    imageLayer.children[0].destroy();
+                    imageLayer.clear();
+                    resetAnchors();
+                }
+
+                var ratio = Math.min(canvasWidth / photoImage.width, canvasHeight / photoImage.height);
+                var offsetX = photoImage.width * ratio / 2;
+                var offsetY = photoImage.height * ratio / 2
+                var centerShiftX = offsetX + (canvasWidth - photoImage.width * ratio) / 2;
+                var centerShiftY = offsetY + (canvasHeight - photoImage.height * ratio) / 2;
+
+                var image = new Konva.Image({
+                    x: centerShiftX,
+                    y: centerShiftY,
+                    width: photoImage.width * ratio,
+                    height: photoImage.height * ratio,
+                    offset: {
+                        x: offsetX,
+                        y: offsetY
+                    }
+                });
+
+                image.image(photoImage);
+
+                switch(orientation){
+                    case 3:
+                        image.rotate(180);
+                        break;
+                    case 8:
+                        image.rotate(-90);
+                        break;
+                    case 6:
+                        image.rotate(90);
+                        break;
+                }
+
+                // add the image to the layer
+                imageLayer.add(image);
+                imageLayer.draw();
+
+                if (!anchorsLayer.children || anchorsLayer.children.length === 0) {
+                    //draw all 3 anchors at once
+                    anchorsLayer.add(createAnchor(50, canvasHeight / 2));
+                    anchorsLayer.add(createAnchor(canvasWidth / 2, canvasHeight / 2));
+                    anchorsLayer.add(createAnchor(canvasWidth - 50, canvasHeight / 2));
+                    anchorsLayer.draw();
+                }
+
+                $('#button_save').prop('disabled', false);
+                @if (!Request.IsAuthenticated)
+                {
+                    @:$('#@Html.IdFor(m => new AngleMeasurementPostModel().Email)').prop('disabled', false);
+                }
+            }
+
+            function buildAngle() {
+                drawAngleLine();
+                drawAngleWedge();
+                measureAngle();
+            }
+
+            function createAnchor(x, y) {
+                var anchorRadius = 10;
+
+                var anchor = new Konva.Circle({
+                    x: x,
+                    y: y,
+                    radius: anchorRadius,
+                    stroke: '#666',
+                    fill: '#ddd',
+                    strokeWidth: 2,
+                    draggable: true,
+                    dragBoundFunc: function (pos) {
+                        if (pos.x < 0 + anchorRadius) {
+                            pos.x = anchorRadius;
+                        }
+                        if (pos.x > stage.getWidth() - anchorRadius) {
+                            pos.x = stage.getWidth() - anchorRadius;
+                        }
+
+                        if (pos.y < 0 + anchorRadius) {
+                            pos.y = anchorRadius;
+                        }
+                        if (pos.y > stage.getHeight() - anchorRadius) {
+                            pos.y = stage.getHeight() - anchorRadius;
+                        }
+
+                        return pos;
+                    }
+                });
+
+                // add hover styling
+                anchor.on('mouseover',
+                    function () {
+                        document.body.style.cursor = 'pointer';
+                        this.setStrokeWidth(4);
+                        anchorsLayer.draw();
+                    });
+                anchor.on('mouseout',
+                    function () {
+                        document.body.style.cursor = 'default';
+                        this.setStrokeWidth(2);
+                        anchorsLayer.draw();
+                    });
+
+                return anchor;
+            }
+
+            @if (Request.IsAuthenticated)
+            {
+                <text>
+                    function saveResult() {
+                        if ($('#form_inputs').valid()) {
+                            showWaitingWindow();
+                            $.post({
+                                url: '/api/anglemeasurement',
+                                //http://www.asp.net/web-api/overview/advanced/sending-html-form-data-part-1
+                                data: {
+                                    angle: $('#@Html.IdFor(m => m.Angle)').val(),
+                                    categoryId: $('#@Html.IdFor(m => new AngleMeasurementPostModel().CategoryId)').val(),
+                                    date: $('#@Html.IdFor(m => new AngleMeasurementPostModel().Date)').val(),
+                                    photoData: stage.toDataURL().replace('data:image/png;base64,', '')
+                                }
+                            }).fail(function (data) {
+                                showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+                            }).done(function (data) {
+                                if (data) {
+                                    showSuccessNotification('Your angle measurement has been saved successfully');
+                                    $('#category_grid_filter').val($('#@Html.IdFor(m => new AngleMeasurementPostModel().CategoryId)').val()).change();
+                                    $('#button_share').prop('disabled', false);
+                                } else {
+                                    showErrorNotification('Unspecified error has been occurred');
+                                }
+                            }).always(function () {
+                                hideWaitingWindow();
+                            });
+                        }
+                    }
+                </text>
+            }
+            else
+            {
+                <text>
+                    function saveAnonymResult() {
+                        if ($('#form_inputs').valid()) {
+                            textLayer.draw();
+                            var data = stage.toDataURL().replace('data:image/png;base64,', '');
+                            textLayer.clear();
+
+                            var angle = textLayer.children[0].textArr[0].text.replace('º', '');
+
+                            showWaitingWindow();
+                            $.post({
+                                url: '/api/anglemeasurement',
+                                //http://www.asp.net/web-api/overview/advanced/sending-html-form-data-part-1
+                                data: {
+                                    angle: angle,
+                                    categoryId: $('#@Html.IdFor(m => new AngleMeasurementPostModel().CategoryId)').val(),
+                                    date: $('#@Html.IdFor(m => new AngleMeasurementPostModel().Date)').val(),
+                                    email: $('#@Html.IdFor(m => new AngleMeasurementPostModel().Email)').val(),
+                                    photoData: data
+                                }})
+                                .fail(function (data) {
+                                    showErrorNotification(data.responseJSON.Message || data.statusText);
+                                })
+                                .done(function (data) {
+                                    if (data) {
+                                        document.location.href = '@Url.Action("Register", "Account")?email=' + data;
+                                    } else {
+                                        showErrorNotification('Unspecified error has been occurred');
+                                    }
+                                })
+                                .always(function () {
+                                    hideWaitingWindow();
+                                });
+                        }
+                    }
+                </text>
+            }
+        }
+    </script>
+}

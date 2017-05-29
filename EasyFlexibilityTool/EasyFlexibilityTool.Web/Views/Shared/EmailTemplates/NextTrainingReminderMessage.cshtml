@@ -1,0 +1,32 @@
+﻿@model EasyFlexibilityTool.Web.Models.TrainingReminderModel
+@{
+    Layout = "_Layout.cshtml";
+}
+<p>
+    Hello @Model.UserName, this is a reminder of your splits training for @Model.CategoryName
+    @if (Model.NextTrainingDate.HasValue)
+    {
+        @:on @Model.LastAngleMeasurement.DateTimeStamp.Date.AddDays(2).ToString("D")
+    }.
+</p>
+<p>It's your training number: @(Model.AngleMeasurementsCount + 1).</p>
+<p>You are at @Model.LastAngleMeasurement.Angle degrees.</p>
+
+@if (Model.AngleMeasurementsCount > 1)
+{
+    <p>Your progress rate is @(string.Format("{0:0.00}", Model.ProgressRate)).</p>
+    if (Model.FullSplitEstimationDate.HasValue)
+    {
+        <p>Keep at it and you'll get your splits by @Model.FullSplitEstimationDate.Value.ToString("D").</p>
+    }
+}
+
+<p>
+    Drop us a line if you have questions about your training. You will find the contact form by pressing the "Contact Us" button at the bottom right corner on <a href="http://www.easyflexibility.com">www.easyflexibility.com</a>
+</p>
+<p>
+    You can also chat live with a Certified instructor Mondays to Fridays from 9am to 5pm EST.
+</p>
+<p>
+    Take today's split progress photo and upload it to the EasyFlexibility Splits Application! <a href="http://easyflexibility.azurewebsites.net/">http://easyflexibility.azurewebsites.net/</a>
+</p>

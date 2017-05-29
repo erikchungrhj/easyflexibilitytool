@@ -1,0 +1,501 @@
+﻿@using EasyFlexibilityTool.Data.Model
+@using EasyFlexibilityTool.Web.Models
+
+@{
+    ViewBag.Title = "Leaderboard";
+}
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<link href="~/Styles/sweetalert.css" rel="stylesheet" />
+
+<script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/sweetalert.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+
+    .modal a.close-modal {
+        visibility: hidden;
+    }
+
+    #comment_panel_div {
+        margin: 100px 25% 100px 25%;
+    }
+
+    #split_image_div {
+        text-align: center;
+    }
+
+    #split_image_img {
+        max-width: 100%;
+        min-height: 100px;
+        max-height: 400px;
+        margin-bottom: 20px;
+    }
+
+    #comment_panel {
+        font-size: 120%;
+    }
+
+    #comment_panel img {
+        width: 22px;
+    }
+
+    #comment_text_wrapper {
+        border: 1px solid #bbb;
+        overflow-y: auto;
+    }
+
+    #new_comment_text {
+        height: 70px;
+        outline: none;
+        margin: 5px;
+    }
+
+    #add_comment_button {
+        float: right;
+        text-decoration: none;
+    }
+
+    #comment_grid {
+        margin-top: 10px;
+    }
+
+    #comment_grid p {
+        margin: 0px;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 32px;
+        color: green;
+        border-radius: 8px;
+        border-style: solid;
+        border-width: 1px 8px 1px 8px;
+        border-color: darkseagreen;
+    }
+
+    .div-inline {
+        float: right;
+        height: 30px;
+        margin-top: 20px;
+        margin-bottom: 10px;
+    }
+
+    .div-inline div {
+        float: left;
+        height: 30px;
+        margin-right: 10px;
+    }
+
+    .div-inline label {
+        font-size: 25px;
+        line-height: 30px;
+    }
+
+    .reward-points {
+        color: red;
+        margin-right: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        border-radius: 2px;
+        border-style: solid;
+        border-width: 1px 1px 4px 1px;
+        border-color: darkgoldenrod;
+    }
+</style>
+
+<div id="comment_panel_div" style="display:none;">
+    <div id="split_image_div">
+        <img id="split_image_img" />
+    </div>
+    <div id="comment_panel">
+        <div id="comment_text_wrapper">
+            <div id="new_comment_text" contentEditable="true" hidefocus="true"></div>
+        </div>
+        <div>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F600.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F601.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F602.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F605.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F606.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F607.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F608.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F609.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F60A.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F60B.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F60C.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F60D.png" /></a>
+            <a href="javascript:void(0)" class="emoji-icon"><img src="https://cdn.okccdn.com/media/img/emojis/apple/1F60E.png" /></a>
+            <a href="javascript:void(0)" id="add_comment_button">Add Comment</a>
+        </div>
+        <div style="overflow-y:auto;">
+            <div id="comment_grid"></div>
+        </div>
+    </div>
+</div>
+
+@if (!ViewBag.IsAgreeToLeaderboard)
+{
+    <section class="well-xs">
+        <div class="container relative">
+            <h1 class="relative wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+                Share your progress
+                <span class="devider devider-md devider-default devider-position-left devider-position-bottom"></span>
+            </h1>
+            <div class="row row-offset-1 flow-offset-1">
+                <div class="col-md-12 wow fadeInUp">
+
+                    <div id="div_agreement">
+                        <h3>Don't see your name in the Leaderboard?</h3>
+                        <h4>Click the Agree button to share your progress and get the Promo Code</h4>
+
+                        <form class="rd-mailform" id="form_username">
+                            <fieldset>
+                                <label data-add-placeholder="" class="mfInput">
+                                    <input type="text" id="@Html.IdFor(m => new ApplicationUser().UserName)" name="@Html.IdFor(m => new ApplicationUser().UserName)" data-val="true" data-val-length="The field UserName must be a string with a maximum length of 254." data-val-length-max="254" placeholder="Display Name" required="required" data-val-required="The Display Name field is required." />
+                                    @Html.ValidationMessageFor(m => new ApplicationUser().UserName)
+                                </label>
+
+                                <div class="mfControls">
+                                    <button type="button" class="btn btn-lg btn-warning" onclick="agree()">
+                                        <span class="glyphicon glyphicon-ok"></span> Agree
+                                    </button>
+                                </div>
+                                <div class="mfInfo mfProgress">
+                                    <span class="cnt"></span>
+                                    <span class="loader"></span>
+                                    <span class="msg"></span>
+                                </div>
+                            </fieldset>
+                        </form>
+                    </div>
+
+                    <div id="div_promocode" style="display: none;">
+                        <h3>Here is your promocode: <em><b><span id="span_promocode"></span></b></em></h3>
+                        <h4>Thank you for sharing your progress!</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+<section class="well-xs">
+    <div class="container relative">
+        <div class="relative wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+            <p class="page-title">Leaderboard</p>
+            <center><p style="font-size:20px;">Click on a picture to write a comment on it</p></center>
+            @if (ViewBag.IsAgreeToLeaderboard)
+            {
+                <div class="div-inline">
+                    <div>
+                        <label>My Reward Points:</label>
+                    </div>
+                    <div>
+                        <label class="reward-points">@ViewBag.RewardPoints</label>
+                    </div>
+                    <div>
+                        @{
+                            var RedeemButtonEnabled = ViewBag.Redeemed ? "disabled" : "enabled";
+                        }
+                        <button type="button" id="button_redeem_points" class="btn btn-warning" @RedeemButtonEnabled>Redeem Points</button>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="row row-offset-1 flow-offset-1">
+            <div class="col-md-12 wow fadeInUp" style="font-size: 120%;">
+                <div id="leaderboard_grid"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+
+        var commentImageId = "";
+
+        function agree() {
+            $('#form_username').validate();
+            var usernameElement = $('#@Html.IdFor(m => new ApplicationUser().UserName)');
+            if (usernameElement.valid()) {
+                swal({
+                    type: "info",
+                    title: "Are you sure to share your progress in the Leaderboard?",
+                    text: "",
+                    showCancelButton: true,
+                    confirmButtonColor: "#5CB85C",
+                    confirmButtonText: "Yes, I agree",
+                    cancelButtonText: "No, I don't",
+                    closeOnConfirm: false
+                }, function () {
+                    $.post({
+                        url: '/api/leaderboard/enable?username=' + $('#@Html.IdFor(m => new ApplicationUser().UserName)').val()
+                    }).fail(function(data) {
+                        showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+                    }).done(function(data) {
+                        if (data) {
+                            location.reload();
+                        }
+                    });
+                });
+            }
+        }
+
+        function getImageUrlOnBlobStorage(imageId) {
+            return '@AppSettings.StorageBaseUrl@AppSettings.StoragePhotoContainerName/' + imageId + '.@AppSettings.StorageBlobExtension';
+        }
+
+        function showSplitImageModalDialog(imageId) {
+            commentImageId = imageId;
+            $("#comment_grid").jsGrid("loadData");
+            $("#split_image_img").attr("src", getImageUrlOnBlobStorage(imageId));
+            $("#new_comment_text").empty();
+            $("#comment_panel_div").modal();
+        }
+
+        $(".emoji-icon").click(function () {
+            $("#new_comment_text").append($(this).html());
+        });
+
+        $("#add_comment_button").click(function () {
+            var comment = $("#new_comment_text").html();
+            if (comment == null || comment.length == 0) return;
+            swal({
+                type: "info",
+                title: "Are you sure to add your comment?",
+                text: "",
+                showCancelButton: true,
+                confirmButtonColor: "#5CB85C",
+                confirmButtonText: "Yes",
+                cancelButtonText: "No",
+                closeOnConfirm: false
+            }, function (isConfirm) {
+                if (isConfirm) {
+                    $.post("/api/leaderboard/addcomment", {
+                        ImageId: commentImageId,
+                        CommentContent: comment
+                    }).done(function (data) {
+                        $("#comment_grid").jsGrid("loadData");
+                        $("#new_comment_text").empty();
+                        swal("Success", "Your comment has been added", "success");
+                    });
+                }
+            });
+        });
+
+        $("#button_redeem_points").click(function () {
+            showWaitingWindow();
+            $.get({
+                url: "/api/leaderboard/redeempoints",
+                data: {
+                    RedeemPoints: $("#span_reward_points").text()
+                }
+            }).done(function (data) {
+                if (data) {
+                    $("#span_reward_points").text("0");
+                    $("#button_redeem_points").prop("disabled", true);
+                    showSuccessNotification("Redeem Request Sent Successfully");
+                } else {
+                    showErrorNotification("Unspecified Error Has Been Occurred");
+                }
+            }).fail(function (data) {
+                showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+            }).always(function () {
+                hideWaitingWindow();
+            });
+        });
+
+        $(function () {
+            @{
+                var controlColumnWidth = ViewBag.UserRole == "User" ? 0 : 40;
+                var deleteButtonVisibility = ViewBag.UserRole == "User" ? "false" : "true";
+            }
+            $('#leaderboard_grid').jsGrid({
+                width: '100%',
+                filtering: false,
+                sorting: false,
+                paging: false,
+                autoload: true,
+                selecting: false,
+
+                deleteConfirm: function (item) {
+                    return "Do you really want to delete <" + item.UserName + "> from Leaderboard?";
+                },
+
+                controller: {
+                    loadData: function(filter) {
+                        return $.get({
+                            url: '/api/leaderboard',
+                            data: filter,
+                            dataType: 'json'
+                        });
+                    },
+                    deleteItem: function (item) {
+                        showWaitingWindow();
+                        return $.ajax({
+                            url: "/api/leaderboard/delete?userId=" + item.UserId,
+                            type: "POST"
+                        }).done(function (data) {
+                            if (data) {
+                                showSuccessNotification(data.UserName + " Deleted Successfully");
+                            } else {
+                                showErrorNotification("Unspecified Error Has Been Occurred");
+                            }
+                        }).fail(function (data) {
+                            showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+                        }).always(function () {
+                            hideWaitingWindow();
+                        });
+                    }
+                },
+
+                fields: [
+                    {
+                        name: 'Position',
+                        title: '#',
+                        type: 'text',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 20,
+                        itemTemplate: function(value, model) {
+                            return '<span>' + (this._grid.data.indexOf(model) + 1) + '</span>';
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().UserName)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().UserName)',
+                        type: 'text',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 200,
+                        itemTemplate: function (value, model) {
+                            var result = model.UserName;
+                            if (model.BestMeasurement.Angle >= 180) {
+                                result = "<img width='50' src='@Url.Content("~/Content/Images/badge180.png")' /> " + result;
+                            }
+                            return result;
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().FirstMeasurement.Angle).ToString().Replace("_", ".")',
+                        title: 'First',
+                        type: 'number',
+                        align: 'center',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            var imageId = model.@Html.IdFor(m => new LeaderboardItemModel().FirstMeasurement.Id).ToString().Replace("_", ".");
+                            var result = '<p>' + value + '&deg;</p>';
+                            result += '<p><em>' + moment(new Date(model.@Html.IdFor(m => new LeaderboardItemModel().FirstMeasurement.DateTimeStamp).ToString().Replace("_", "."))).format('LL') + '</em></p>';
+                            result += '<a href="javascript:void(0);" onclick="showSplitImageModalDialog(\'' + imageId + '\')"><img width="100" src="' + getImageUrlOnBlobStorage(imageId) + '"></img></a>';
+                            return result;
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().BestMeasurement.Angle).ToString().Replace("_", ".")',
+                        title: 'Best',
+                        type: 'number',
+                        align: 'center',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            var imageId = model.@Html.IdFor(m => new LeaderboardItemModel().BestMeasurement.Id).ToString().Replace("_", ".");
+                            var result = '<p>' + value + '&deg;</p>';
+                            result += '<p><em>' + moment(new Date(model.@Html.IdFor(m => new LeaderboardItemModel().BestMeasurement.DateTimeStamp).ToString().Replace("_", "."))).format('LL') + '</em></p>';
+                            result += '<a href="javascript:void(0);" onclick="showSplitImageModalDialog(\'' + imageId + '\')"><img width="100" src="' + getImageUrlOnBlobStorage(imageId) + '"></img></a>';
+                            return result;
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().Progress)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().Progress)',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 90,
+                        itemTemplate: function(value) {
+                            return '<span>' + Math.round(value * 100) / 100 + '&deg;</span>';
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().RewardPoints)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().RewardPoints)',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 90,
+                        itemTemplate: function(value) {
+                            return '<span>' + Math.round(value * 100) / 100 + '</span>';
+                        }
+                    }, {
+                        type: "control",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: @controlColumnWidth,
+                        editButton: false,
+                        deleteButton: @deleteButtonVisibility
+                    }
+                ]
+            });
+
+            $('#comment_grid').jsGrid({
+                width: "100%",
+                height: "250px",
+                filtering: false,
+                sorting: false,
+                paging: false,
+                autoload: true,
+                selecting: false,
+                heading: false,
+
+                deleteConfirm: function (item) {
+                    return "Do you really want to delete the comment of <" + item.UserName + ">?";
+                },
+
+                controller: {
+                    loadData: function(filter) {
+                        return $.get({
+                            url: "/api/leaderboard/getcomment?imageId=" + commentImageId,
+                            data: filter,
+                            dataType: 'json'
+                        });
+                    },
+                    deleteItem: function (item) {
+                        return $.ajax({
+                            url: "/api/leaderboard/deletecomment?commentId=" + item.Id,
+                            type: "POST"
+                        }).done(function (data) {
+                            if (data) {
+                                showSuccessNotification(data.UserName + " Deleted Successfully");
+                            } else {
+                                showErrorNotification("Unspecified Error Has Been Occurred");
+                            }
+                        });
+                    }
+                },
+
+                fields: [
+                    {
+                        type: 'text',
+                        align: 'left',
+                        width: 500,
+                        itemTemplate: function (value, model) {
+                            var result = '<p><b>' + model.UserName + '</b> &#8226; <em>' + moment(new Date(model.@Html.IdFor(m => new CommentModel().DateTimeStamp).ToString().Replace("_", "."))).format('LL') + '</em></p>';
+                            result += '<p>' + model.CommentContent + '</p>';
+                            return result;
+                        }
+                    }, {
+                        type: "control",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: @controlColumnWidth,
+                        editButton: false,
+                        deleteButton: @deleteButtonVisibility
+                    }
+                ]
+            });
+        });
+    </script>
+}

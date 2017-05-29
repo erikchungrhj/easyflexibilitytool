@@ -1,0 +1,183 @@
+﻿body {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-weight: 300;
+    line-height: 1.1;
+    color: inherit;
+}
+
+/* Fixing bootstrap modal 17px issue */
+body.modal-open {
+    overflow-y: auto !important;
+    padding-right: 0 !important;
+}
+
+.modal-scrollbar-measure {
+    overflow: hidden;
+}
+
+.fb-share-button {
+    -ms-transform: scale(1.75);
+    -webkit-transform: scale(1.75);
+    -o-transform: scale(1.75);
+    -moz-transform: scale(1.75);
+    transform: scale(1.75);
+    -ms-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -moz-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    transform-origin: top left;
+}
+
+.btn-social {
+    position: relative;
+    padding-left: 44px;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+    .btn-social > :first-child {
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 32px;
+        line-height: 34px;
+        font-size: 1.6em;
+        text-align: center;
+        border-right: 1px solid rgba(0,0,0,0.2);
+    }
+
+    .btn-social.btn-lg {
+        padding-left: 61px;
+    }
+
+        .btn-social.btn-lg > :first-child {
+            line-height: 45px;
+            width: 45px;
+            font-size: 1.8em;
+        }
+
+    .btn-social.btn-sm {
+        padding-left: 38px;
+    }
+
+        .btn-social.btn-sm > :first-child {
+            line-height: 28px;
+            width: 28px;
+            font-size: 1.4em;
+        }
+
+    .btn-social.btn-xs {
+        padding-left: 30px;
+    }
+
+        .btn-social.btn-xs > :first-child {
+            line-height: 20px;
+            width: 20px;
+            font-size: 1.2em;
+        }
+
+.btn-facebook {
+    color: #fff;
+    background-color: #3b5998;
+    border-color: rgba(0,0,0,0.2);
+}
+
+    .btn-facebook:focus, .btn-facebook.focus {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook:hover {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook:active, .btn-facebook.active, .open > .dropdown-toggle.btn-facebook {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+        .btn-facebook:active:hover, .btn-facebook.active:hover, .open > .dropdown-toggle.btn-facebook:hover, .btn-facebook:active:focus, .btn-facebook.active:focus, .open > .dropdown-toggle.btn-facebook:focus, .btn-facebook:active.focus, .btn-facebook.active.focus, .open > .dropdown-toggle.btn-facebook.focus {
+            color: #fff;
+            background-color: #23345a;
+            border-color: rgba(0,0,0,0.2);
+        }
+
+    .btn-facebook:active, .btn-facebook.active, .open > .dropdown-toggle.btn-facebook {
+        background-image: none;
+    }
+
+    .btn-facebook.disabled, .btn-facebook[disabled], fieldset[disabled] .btn-facebook, .btn-facebook.disabled:hover, .btn-facebook[disabled]:hover, fieldset[disabled] .btn-facebook:hover, .btn-facebook.disabled:focus, .btn-facebook[disabled]:focus, fieldset[disabled] .btn-facebook:focus, .btn-facebook.disabled.focus, .btn-facebook[disabled].focus, fieldset[disabled] .btn-facebook.focus, .btn-facebook.disabled:active, .btn-facebook[disabled]:active, fieldset[disabled] .btn-facebook:active, .btn-facebook.disabled.active, .btn-facebook[disabled].active, fieldset[disabled] .btn-facebook.active {
+        background-color: #3b5998;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook .badge {
+        color: #3b5998;
+        background-color: #fff;
+    }
+
+.window-waiting-content {
+    z-index: 1100;
+    margin: 300px auto;
+    padding: 10px;
+    width: 170px;
+    opacity: 1;
+    -moz-opacity: 1;
+    text-align: center;
+}
+
+.modal {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) { 
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.field-validation-error {
+    color: crimson;
+}

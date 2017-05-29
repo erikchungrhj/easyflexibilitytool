@@ -1,0 +1,22 @@
+﻿@{
+    ViewBag.Title = "Confirm Email";
+}
+
+<section class="well-xs">
+    <div class="container relative">
+        <h2 class="relative text-center text-md-left wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+            @ViewBag.Title
+            <span class="devider devider-md devider-default devider-position-left devider-position-center-sm devider-position-bottom"></span>
+        </h2>
+
+        <p class="wow fadeInLeft" data-wow-delay=".75s" style="visibility: visible; animation-delay: 0.75s; animation-name: fadeInLeft;">
+            <h6>Thank you for confirming your email. You have ben logged in.</h6>
+        </p>
+        <p class="wow fadeInLeft" data-wow-delay=".85s" style="visibility: visible; animation-delay: 0.85s; animation-name: fadeInLeft;">
+            <h6>Watch out for a second email which will contain your first splits angle measurement.</h6>
+        </p>
+        <p class="wow fadeInUp text-center" data-wow-delay=".95s" style="visibility: visible; animation-delay: 0.95s; animation-name: fadeInUp; margin-top: 100px;">
+            @Html.ActionLink("Click here to start tracking your progress", "Index", "AngleMeasurement", null, new { @class = "link link-primary" })
+        </p>
+    </div>
+</section>

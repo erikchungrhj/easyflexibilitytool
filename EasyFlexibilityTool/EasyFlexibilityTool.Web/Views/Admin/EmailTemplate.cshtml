@@ -1,0 +1,296 @@
+﻿@using EasyFlexibilityTool.Web.Models
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+    .body {
+        padding: 20px 5% 20px 5%;
+    }
+    .email-category {
+        font-size: 150%;
+        text-align: center;
+    }
+    input[type=checkbox] {
+        -webkit-appearance: checkbox;
+    }
+    .training-check-sub-option input[type=number] {
+        border: 1px solid darkslategrey;
+        width: 50px;
+        text-align: center;
+    }
+    .special-offers-sub-option input[type=text] {
+        border: 1px solid darkgreen;
+        padding-left: 2px;
+        padding-right: 2px;
+    }
+    #offer_name {
+        width: 120px;
+    }
+    #offer_date {
+        width: 80px;
+        text-align: center;
+    }
+    #create_offer_button {
+        margin: 5px 0 0 0;
+    }
+    textarea {
+        min-width: 100%;
+        max-width: 100%;
+        min-height: 200px;
+        border: 1px solid;
+        padding: 15px;
+    }
+    #current_template_name,
+    #template_content {
+        font-size: 120%;
+    }
+    .template-tag {
+        float: left;
+        margin: 10px 10px 0 0;
+        padding: 4px 12px 4px 12px;
+        border: 1px solid darkcyan;
+        border-radius: 3px;
+        background-color: darkseagreen;
+    }
+    .template-tag:hover {
+        background-color: aqua;
+        cursor: pointer;
+    }
+    #save_button {
+        float: right;
+        margin-top: 20px;
+    }
+</style>
+
+<div class="body">
+    <div class="row">
+        <div class="col-md-3 well">
+            <div class="list-group email-category">
+                <a href="#" class="list-group-item">Confirm Account</a>
+                <a href="#" class="list-group-item">Welcome</a>
+                <a href="#" class="list-group-item">Goal Achieved</a>
+                <a href="#" class="list-group-item">Training Check</a>
+                <a href="#" class="list-group-item">Special Offers</a>
+            </div>
+            <div class="training-check-sub-option" hidden>
+                <div>
+                    <input type="checkbox" id="send_every_checkbox"> Send Every <input type="number" min="1" max="365" value="1" id="send_every_days" /> Days
+                </div>
+                <div>
+                    <input type="checkbox" id="send_if_checkbox"> Send If Progress Rate is Less Than <input type="number" min="1" max="360" value="1" id="send_if_degrees" /> &deg;
+                </div>
+            </div>
+            <div class="special-offers-sub-option" hidden>
+                <div class="well">
+                    <div>
+                        <label>Offer: </label>
+                        <input type="text" id="offer_name" />
+                        <input type="text" id="offer_date" />
+                    </div>
+                    <center><button type="button" class="btn btn-sm btn-success" id="create_offer_button">
+                        <span class="glyphicon glyphicon-plus"></span> Create Offer
+                    </button></center>
+                </div>
+                <div id="special_offer_grid"></div>
+            </div>
+        </div>
+        <div class="col-md-9 well">
+            <center><span id="current_template_name"></span></center>
+            <div>
+                <textarea id="template_content"></textarea>
+            </div>
+            <div>
+                <div class="template-tag">{UserName}</div>
+                <div class="template-tag">{NumberOfDaysSinceLastUpdate}</div>
+                <div class="template-tag">{ProgressRate}</div>
+                <div class="template-tag">{CurrentDegrees}</div>
+                <div class="template-tag">{FirstDegrees}</div>
+                <div class="template-tag">{ConfirmAccountLink}</div>
+                <button type="button" class="btn btn-success" id="save_button" disabled>
+                    <span class="glyphicon glyphicon-save"></span> Save
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        var currentTemplateName, isSpecialOffer;
+
+        $(".email-category a").on("click", function () {
+            $(".email-category a").removeClass("active");
+            $(this).addClass("active");
+
+            $("#offer_name").val("");
+            $("#offer_date").val($.datepicker.formatDate("mm/dd/yy", new Date()));
+            $("#current_template_name").text("");
+            $("#template_content").val("");
+
+            var templateName = $(this).text();
+            if (templateName == "Training Check") {
+                $(".training-check-sub-option").show();
+            } else {
+                $(".training-check-sub-option").hide();
+            }
+            if (templateName == "Special Offers") {
+                $("#save_button").prop("disabled", true);
+                $(".special-offers-sub-option").show();
+            } else {
+                $(".special-offers-sub-option").hide();
+                templateChanged(templateName, false);
+            }
+        });
+
+        function templateChanged(templateName, specialOffer) {
+            $("#save_button").prop("disabled", false);
+            currentTemplateName = templateName;
+            $("#current_template_name").text(currentTemplateName);
+            isSpecialOffer = specialOffer;
+            $.ajax({
+                url: "/api/admin/getemailtemplate?templateName=" + templateName,
+                type: "GET"
+            }).done(function (data) {
+                if (data) {
+                    $("#template_content").val(data.TemplateContent);
+                    if (data.TemplateName == "Training Check") {
+                        var sendConditionItems = data.SendCondition.split("#");
+                        $("#send_every_checkbox").prop("checked", sendConditionItems[0] == "true");
+                        $("#send_every_days").val(sendConditionItems[1]);
+                        $("#send_if_checkbox").prop("checked", sendConditionItems[2] == "true");
+                        $("#send_if_degrees").val(sendConditionItems[3]);
+                    } else if (isSpecialOffer) {
+                        $("#offer_name").val(currentTemplateName);
+                        $("#offer_date").val(data.SendCondition.substring(6));
+                    }
+                }
+            });
+        }
+
+        $("#create_offer_button").on("click", function () {
+            var offerName = $("#offer_name").val();
+            if (!offerName) {
+                swal("Error", "Please enter Offer Name", "error");
+                return;
+            }
+            var specialOfferData = $("#special_offer_grid").data()["JSGrid"]["data"];
+            for (var i = 0; i < specialOfferData.length; i++) {
+                if (offerName.toLowerCase() == specialOfferData[i]["TemplateName"].toLowerCase()) {
+                    swal("Error", "Same Offer Name Exist\nPlease Enter Other Offer Name", "error");
+                    return;
+                }
+            }
+            $.post("/api/admin/addemailtemplate", {
+                TemplateName: offerName,
+                SendCondition: "OFFER#" + $("#offer_date").val(),
+                TemplateContent: ""
+            }).done(function (data) {
+                if (data == "OK") {
+                    $("#special_offer_grid").jsGrid("loadData");
+                    swal("Success", "Created successfully", "success");
+                } else {
+                    swal("Failure", "Operation failed", "error");
+                }
+            });
+        });
+
+        $(".template-tag").on("click", function () {
+            $("#template_content").val($("#template_content").val() + " " + $(this).html());
+        });
+
+        $("#save_button").on("click", function () {
+            if (currentTemplateName == null) return;
+            var sendCondition = "N/A";
+            if (isSpecialOffer) {
+                sendCondition = "OFFER#" + $("#offer_date").val();
+            } else if (currentTemplateName == "Training Check") {
+                sendCondition = $("#send_every_checkbox").is(":checked") + "#" + $("#send_every_days").val() + "#" +
+                    $("#send_if_checkbox").is(":checked") + "#" + $("#send_if_degrees").val();
+            }
+
+            $.post("/api/admin/addemailtemplate", {
+                TemplateName: currentTemplateName,
+                SendCondition: sendCondition,
+                TemplateContent: $("#template_content").val()
+            }).done(function (data) {
+                if (data == "OK") {
+                    swal("Success", "Saved successfully", "success");
+                } else {
+                    swal("Failure", "Operation failed", "error");
+                }
+            });
+        });
+
+        $(function () {
+            $("#offer_date").datepicker();
+            $("#offer_date").val($.datepicker.formatDate("mm/dd/yy", new Date()));
+
+            $("#special_offer_grid").jsGrid({
+                width: "100%",
+                autoload: true,
+                heading: false,
+
+                deleteConfirm: function (item) {
+                    return "Do you really want to delete <" + item.TemplateName + ">?";
+                },
+
+                controller: {
+                    loadData: function (filter) {
+                        return $.get({
+                            url: "/api/admin/getspecialofferlist",
+                            data: filter,
+                            dataType: "json"
+                        });
+                    },
+                    deleteItem: function (item) {
+                        return $.ajax({
+                            url: "/api/admin/deleteemailtemplate?templateName=" + item.TemplateName,
+                            type: "POST"
+                        }).done(function (data) {
+                            if (data) {
+                                showSuccessNotification(data.TemplateName + " Deleted Successfully");
+                            } else {
+                                showErrorNotification("Unspecified Error Has Been Occurred");
+                            }
+                        });
+                    }
+                },
+
+                rowClick: function (args) {
+                    templateChanged(args.item.TemplateName, true);
+                },
+
+                fields: [
+                    {
+                        type: "text",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            return model.TemplateName;
+                        }
+                    }, {
+                        type: "text",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 100,
+                        itemTemplate: function (value, model) {
+                            return model.SendCondition;
+                        }
+                    }, {
+                        type: "control",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 30,
+                        editButton: false
+                    }
+                ]
+            });
+        });
+    </script>
+}

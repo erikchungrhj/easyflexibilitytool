@@ -1,0 +1,29 @@
+﻿@model EasyFlexibilityTool.Web.ViewModels.IndexViewModel
+@{
+    ViewBag.Title = "Manage";
+}
+
+
+<section class="well-xs">
+    <div class="container relative">
+        <h2 class="relative text-center text-md-left wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+            Account Settings
+            <span class="devider devider-md devider-default devider-position-left devider-position-center-sm devider-position-bottom"></span>
+        </h2>
+
+        <p>@ViewBag.StatusMessage</p>
+
+        <article class="news-post wow fadeInLeft" data-wow-delay=".75s" style="visibility: visible; animation-delay: 0.75s; animation-name: fadeInLeft;">
+            <p>
+                @if (Model.HasPassword)
+                {
+                    @Html.ActionLink("Change your password", "ChangePassword", null, new { @class = "link link-primary" })
+                }
+                else
+                {
+                    @Html.ActionLink("Create", "SetPassword", null, new { @class = "link link-primary" })
+                }
+            </p>
+        </article>
+    </div>
+</section>

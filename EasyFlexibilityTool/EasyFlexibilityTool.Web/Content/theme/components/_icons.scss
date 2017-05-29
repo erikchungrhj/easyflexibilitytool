@@ -1,0 +1,147 @@
+/*
+* @subsection   Icons
+*/
+
+$icon-xs-size: 41px;
+$icon-xs-fz: 20px;
+
+$icon-sm-size: 70px;
+$icon-sm-fz: 30px;
+
+$icon-md-size: 83px;
+$icon-md-fz: 35px;
+
+$icon-lg-size: 90px;
+$icon-lg-fz: 36px;
+
+$icon-xl-size: 190px;
+$icon-xl-fz: 132px;
+
+
+
+// Icon General Styles
+.icon {
+  display: inline-block;
+  text-align: center;
+  border-style: solid;
+
+  &-round {
+    border-radius: 50%;
+  }
+
+}
+
+
+// Icon Sizing Styles
+.icon-xs{
+  width: $icon-xs-size;
+  height: $icon-xs-size;
+  line-height: $icon-xs-size;
+  font-size: $icon-xs-fz;
+}
+
+.icon-sm {
+  width: $icon-sm-size;
+  height: $icon-sm-size;
+  line-height: $icon-sm-size - 4px;
+  font-size: $icon-sm-fz;
+
+}
+
+.icon-md {
+  width: $icon-md-size;
+  height: $icon-md-size;
+  line-height: $icon-md-size - 4px;
+  font-size: $icon-md-fz;
+
+}
+
+.icon-lg {
+  width: $icon-lg-size;
+  height: $icon-lg-size;
+  line-height: $icon-lg-size - 4px;
+  font-size: $icon-lg-fz;
+
+}
+
+.icon-xl{
+  width: $icon-xl-fz;
+  height: $icon-xl-fz;
+  line-height: $icon-xl-fz - 4px;
+  font-size: $icon-xl-fz;
+  &-full {
+    width: $icon-xl-size;
+    height: $icon-xl-size;
+    line-height: $icon-xl-size - 4px;
+  }
+}
+
+
+// Icon Appearance Styles
+.icon-default {
+  color: $grayscale-darken;
+  border-color: transparent;
+}
+
+.icon-primary {
+  color: $contrast;
+  background: $primary;
+}
+
+
+a {
+  &.icon-default:hover {
+  }
+
+  &.icon-primary:hover {
+    background: darken($primary, 5%);
+  }
+}
+
+a.icon {
+  &:hover {
+    @include transform(scale(1.1));
+  }
+}
+
+// Social Icons Styles
+.icon-xs.fa-facebook,
+.icon-sm.fa-facebook,
+.icon-md.fa-facebook,
+.icon-lg.fa-facebook,
+.icon-xl.fa-facebook {
+
+  &:hover {
+  }
+}
+
+.icon-xs.fa-twitter,
+.icon-sm.fa-twitter,
+.icon-md.fa-twitter,
+.icon-lg.fa-twitter,
+.icon-xl.fa-twitter {
+
+  &:hover {
+  }
+}
+
+.icon-xs.fa-google-plus,
+.icon-sm.fa-google-plus,
+.icon-md.fa-google-plus,
+.icon-lg.fa-google-plus,
+.icon-xl.fa-google-plus {
+
+  &:hover {
+  }
+}
+
+
+$icon-preffix: -28px;
+
+.icon.preffix-1 {
+  @media (min-width: $screen-md-min) {
+    margin-left: $icon-preffix;
+  }
+}
+
+

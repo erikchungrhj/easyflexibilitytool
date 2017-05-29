@@ -1,0 +1,68 @@
+﻿<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+
+    .body {
+        padding: 20px 20% 20px 20%;
+    }
+
+    .mail-form {
+        font-size: 150%;
+    }
+
+    #mail_subject {
+        width: 50%;
+        border-bottom: 1px solid gray;
+    }
+
+    #mail_body {
+        width: 100%;
+        height: 300px;
+        resize: none;
+    }
+</style>
+
+<div class="body">
+    <div class="well">
+        <div class="mail-form">
+            <p>
+                <strong>Subject:</strong> <input type="text" id="mail_subject" />
+            </p>
+            <p>
+                <strong>Message:</strong>
+                <textarea class="well" id="mail_body"></textarea>
+            </p>
+        </div>
+        <button type="button" class="btn btn-success" id="button_message_users" style="margin-top:0;">Send Message</button>
+    </div>
+</div>
+
+@section scripts
+{
+    <script type="text/javascript">
+        $("#button_message_users").click(function () {
+            showWaitingWindow();
+            $.get({
+                url: "/api/admin/messageusers",
+                data: {
+                    MailSubject: $("#mail_subject").val(),
+                    MailBody: $("#mail_body").val()
+                }
+            }).done(function (data) {
+                if (data) {
+                    showSuccessNotification("Message Sent Successfully");
+                } else {
+                    showErrorNotification("Unspecified Error Has Been Occurred");
+                }
+            }).fail(function (data) {
+                showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+            }).always(function () {
+                hideWaitingWindow();
+            });
+        });
+    </script>
+}

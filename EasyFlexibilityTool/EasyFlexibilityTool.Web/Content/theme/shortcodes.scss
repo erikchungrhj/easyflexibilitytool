@@ -1,0 +1,75 @@
+@import "_variables.scss";
+@import "includes/mixins";
+/*
+* @package      Shortcodes
+* @description  This package holds style declarations for
+*               shortcodes page
+*/
+
+/*
+ * @subsection   Icon Box
+ */
+.icon-box {
+  position: relative;
+  padding: 8px 20px 8px 45px;
+  transition: .3s all ease;
+  border-radius: 5px;
+  font-size: 16px;
+  @media (min-width: $screen-sm-min) {
+    font-size: 19px;
+  }
+}
+
+.icon-box:hover {
+  color: #fff;
+  background: darken($primary, 2%);
+  box-shadow: 3px 4px 5px 0px rgba(0, 0, 0, 0.11);
+}
+
+.icon-box:before {
+  position: absolute;
+  left: 5px;
+  font-size: 1.4em;
+  top: 50%;
+  @include transform(translateY(-50%));
+
+}
+
+
+.btn {
+  transition: .3s ease-out;
+}
+
+// Button Appearance Styles
+.btn-default {
+  color: $contrast;
+  background: $grayscale-darken;
+  &:hover {
+    color: $primary;
+  }
+}
+
+.btn-primary {
+  color: $contrast;
+  background: $primary;
+  &:hover {
+    color: $grayscale-darken;
+  }
+}
+
+
+* + .container {
+  margin-top: 60px;
+}
+
+* + .row {
+  margin-top: 45px;
+}
+
+h2 + .inline-list {
+  margin-top: 45px;
+}
+
+h4 + h2 {
+  margin-top: 30px;
+}

@@ -1,0 +1,231 @@
+/*
+* @subsection   Easy Responsive Tabs
+*
+* @description  Describes style declarations for Easy Responsive Tabs extension
+*
+* @author       Samson Onna
+* @link         samson3d@gmail.com
+* @version      1.0.0
+*/
+
+$tabs-btn-height: 40px;
+$tabs-btn-indent: 0px;
+
+$tabs-btn-color: #333;
+$tabs-btn-background: #DDD;
+
+$tabs-btn-active-color: #333;
+$tabs-btn-active-background: #FFF;
+
+$tabs-btn-border-radius: 4px;
+$tabs-btn-border: 1px solid #CCC;
+
+$tabs-btn-padding: 10px 20px;
+
+$tab-padding: 20px;
+
+.resp-tabs-list {
+  li {
+    cursor: pointer;
+    display: block;
+    color: $grayscale-darken;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    text-align: center;
+    text-transform: uppercase;
+    font-family: $secondary-font-family;
+    @include transition(.3s ease-out all);
+    @media (min-width: $screen-sm-min) {
+      display: inline-block;
+      text-align: left;
+    }
+    @media (min-width: $screen-md-min) {
+      font-size: 25px;
+    }
+    & + li {
+      margin-top: 10px;
+      @media (min-width: $screen-sm-min) {
+        margin-top: 0;
+        margin-left: 49px;
+      }
+      @media (min-width: $screen-md-min) {
+        margin-left: 62px;
+      }
+    }
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  .resp-tab-item {
+
+    &.resp-tab-active {
+      color: $primary;
+    }
+  }
+}
+
+.resp-accordion {
+  display: none;
+}
+
+.resp-tab-content {
+  display: none;
+}
+
+.resp-tab-content-active {
+  display: block;
+}
+
+.responsive-tabs-default {
+  .resp-tabs-list {
+    display: none;
+    word-spacing: $tabs-btn-indent - 4px;
+    margin-bottom: -1px;
+  }
+
+  .resp-accordion, .resp-tabs-list > li {
+    display: inline-block;
+    word-spacing: normal;
+    padding: $tabs-btn-padding;
+    background: $tabs-btn-background;
+    border: $tabs-btn-border;
+    border-top-left-radius: $tabs-btn-border-radius;
+    border-top-right-radius: $tabs-btn-border-radius;
+    text-transform: uppercase;
+    text-align: center;
+    cursor: pointer;
+    transition: .3s all ease;
+
+    &:hover, &.resp-tab-active {
+      color: $tabs-btn-active-color;
+      background: $tabs-btn-active-background;
+    }
+
+    &.resp-tab-active {
+      border-bottom-color: transparent;
+    }
+  }
+
+  .resp-accordion {
+    display: block;
+    border-radius: 0;
+  }
+
+  .resp-tab-content {
+    display: none;
+    padding: $tab-padding;
+    background: $tabs-btn-background;
+    border: $tabs-btn-border;
+    color: $tabs-btn-active-color;
+    background: $tabs-btn-active-background;
+  }
+}
+
+.responsive-tabs-variant-2 {
+  overflow: hidden;
+
+  .resp-tabs-list {
+    display: none;
+
+    > li {
+      position: relative;
+      display: inline-block;
+
+      &.resp-tab-active {
+
+        &:before, &:after {
+          display: block;
+        }
+
+        > .btn {
+          background: $primary;
+          color: $contrast;
+
+          &:hover {
+
+          }
+        }
+      }
+
+      > .btn {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+        transition: none;
+
+        &:hover {
+          transition: .3s all ease;
+          background: $primary;
+          color: $contrast;
+        }
+      }
+
+      &:before, &:after {
+        content: '';
+        display: none;
+        position: absolute;
+        width: 5000px;
+        border-bottom: 2px solid;
+        bottom: 0;
+      }
+
+      &:before {
+        right: 100%;
+        margin-right: -2px;
+      }
+
+      &:after {
+        left: 100%;
+        margin-left: -2px;
+      }
+    }
+  }
+
+  .resp-accordion, .resp-tabs-list > li {
+    &:hover, &.resp-tab-active {
+
+    }
+
+    &.resp-tab-active {
+    }
+  }
+
+  .btn-default {
+
+  }
+
+  .resp-accordion {
+    display: block;
+
+    &.resp-tab-active {
+      .btn-default {
+
+      }
+    }
+
+    > .btn {
+      display: block;
+    }
+  }
+
+  .resp-tab-content {
+    display: none;
+    padding-top: 50px;
+  }
+
+  .resp-tab-content + .resp-accordion {
+    margin-top: 10px;
+  }
+}
+
+.responsive-tabs:not(.resp-easy-accordion) {
+  @media (min-width: 768px) {
+    .resp-accordion {
+      display: none;
+    }
+
+    .resp-tabs-list {
+      display: block;
+    }
+  }
+}

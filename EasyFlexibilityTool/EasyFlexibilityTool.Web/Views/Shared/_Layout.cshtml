@@ -1,0 +1,187 @@
+﻿@using EasyFlexibilityTool.Web.Extensions
+@using EasyFlexibilityTool.Web.ViewModels
+
+<!DOCTYPE html>
+<html lang="en" class="wide wow-animation">
+<head>
+    <title>@ViewBag.Title - Easy Flexibility</title>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+
+    <!-- Stylesheets -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700%7CRoboto%7CLato:100" rel="stylesheet" type="text/css">
+    @Styles.Render("~/Content/css")
+    @RenderSection("head", false)
+
+    <link href="~/Styles/sweetalert.css" rel="stylesheet" />
+    <script src="~/Scripts/sweetalert.min.js"></script>
+
+    <!--[if lt IE 10]>
+    <script src="@Url.Content("~/Scripts/theme/html5shiv.min.js")"></script>
+    <![endif]-->
+
+    <script type="text/javascript">
+        var appInsights = window.appInsights || function (config) {
+            function r(config) { t[config] = function () { var i = arguments; t.queue.push(function () { t[config].apply(t, i) }) } } var t = { config: config }, u = document, e = window, o = "script", s = u.createElement(o), i, f; for (s.src = config.url || "//az416426.vo.msecnd.net/scripts/a/ai.0.js", u.getElementsByTagName(o)[0].parentNode.appendChild(s), t.cookie = u.cookie, t.queue = [], i = ["Event", "Exception", "Metric", "PageView", "Trace", "Ajax"]; i.length;) r("track" + i.pop()); return r("setAuthenticatedUserContext"), r("clearAuthenticatedUserContext"), config.disableExceptionTracking || (i = "onerror", r("_" + i), f = e[i], e[i] = function (config, r, u, e, o) { var s = f && f(config, r, u, e, o); return s !== !0 && t["_" + i](config, r, u, e, o), s }), t
+        }({
+            instrumentationKey: "@AppSettings.TelemetryInstrumentationKey"
+        });
+
+        window.appInsights = appInsights;
+        appInsights.trackPageView();
+    </script>
+
+    <script type="text/javascript">
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId: '@AppSettings.FacebookAppId',
+                //status: true,
+                //cookie: true,
+                xfbml: true,
+                version: 'v2.6'
+            });
+        };
+
+        (function(d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {
+                return;
+            }
+            js = d.createElement(s);
+            js.id = id;
+            js.src = '//connect.facebook.net/en_US/sdk.js';
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+    </script>
+</head>
+
+<body>
+    <!-- The Main Wrapper -->
+    <div class="page index-list">
+        <!--For older internet explorer-->
+        <div class="old-ie"
+             style='background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;'>
+            <a href="http://windows.microsoft.com/en-US/internet-explorer/..">
+                <img src="@Url.Content("~/Content/Images/theme/ie8-panel/warning_bar_0000_us.jpg")" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today." />
+            </a>
+        </div>
+        <!--END block for older internet explorer-->
+        <!--========================================================
+                                  HEADER
+        =========================================================-->
+        <header class="page-header border-bottom">
+            <!-- RD Navbar -->
+            <div class="rd-navbar-wrap">
+                <nav class="rd-navbar" data-rd-navbar-lg="rd-navbar-static">
+                    <div class="rd-navbar-inner">
+                        <!-- RD Navbar Panel -->
+                        <div class="rd-navbar-panel">
+                            <!-- RD Navbar Toggle -->
+                            <button class="rd-navbar-toggle" data-rd-navbar-toggle=".rd-navbar"><span></span></button>
+                            <!-- END RD Navbar Toggle -->
+                            <!-- RD Navbar Brand -->
+                            <div class="rd-navbar-brand">
+                                <a href="@Url.Action("Index", "Home")">
+                                    <img src="@Url.Content("~/Content/Images/logo.png")" style="height: 50px;" />
+                                </a>
+                            </div>
+                            <!-- END RD Navbar Brand -->
+                        </div>
+                        <!-- END RD Navbar Panel -->
+                        <div class="rd-navbar-nav-wrap">
+                            <!-- RD Navbar Nav -->
+                            <ul class="rd-navbar-nav">
+                                <li class="@Html.GetSelectedCss("Index", "Home")">
+                                    @Html.ActionLink("Home", "Index", "Home")
+                                </li>
+                                <li class="@Html.GetSelectedCss("Index", "AngleMeasurement")">
+                                    @Html.ActionLink("My Splits", "Index", "AngleMeasurement")
+                                </li>
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <li class="@Html.GetSelectedCss("Index", "Leaderboard")">
+                                        @Html.ActionLink("Leaderboard", "Index", "Leaderboard")
+                                    </li>
+                                    <li id="menu_admin" style="display:none;">
+                                        <a href="javascript:void(0);">Admin</a>
+                                        <ul class="rd-navbar-dropdown">
+                                            <li class="@Html.GetSelectedCss("ManageUser", "Admin")">
+                                                @Html.ActionLink("Manage User", "ManageUser", "Admin")
+                                            </li>
+                                            <li class="@Html.GetSelectedCss("MessageUsers", "Admin")">
+                                                @Html.ActionLink("Message Users", "MessageUsers", "Admin")
+                                            </li>
+                                            <li class="@Html.GetSelectedCss("EmailTemplate", "Admin")">
+                                                @Html.ActionLink("Email Template", "EmailTemplate", "Admin")
+                                            </li>
+                                        </ul>
+                                    </li>
+                                }
+                                @Html.Partial("_LoginPartial")
+                                <li class="rd-navbar-inline-list">
+                                    <ul>
+                                        <li><a target="_blank" href="https://facebook.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-facebook"></a></li>
+                                        @*<li><a target="_blank" href="#" class="icon icon-xs icon-default icon-round fa fa-google-plus"></a></li>*@
+                                        @*<li><a target="_blank" href="https://twitter.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-twitter"></a></li>*@
+                                        @*<li><a target="_blank" href="http://pinterest.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-pinterest"></a></li>*@
+                                        @*<li><a target="_blank" href="http://www.instagram.com/easyflexibilitydance" class="icon icon-xs icon-primary icon-round fa fa-instagram"></a></li>*@
+                                    </ul>
+                                </li>
+                            </ul>
+                            <!-- END RD Navbar Nav -->
+                        </div>
+                        <ul class="inline-list">
+                            <li><a target="_blank" href="https://facebook.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-facebook"></a></li>
+                            @*<li><a target="_blank" href="#" class="icon icon-xs icon-default icon-round fa fa-google-plus"></a></li>*@
+                            @*<li><a target="_blank" href="https://twitter.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-twitter"></a></li>*@
+                            @*<li><a target="_blank" href="http://pinterest.com/easyflexibility" class="icon icon-xs icon-primary icon-round fa fa-pinterest"></a></li>*@
+                            @*<li><a target="_blank" href="http://www.instagram.com/easyflexibilitydance" class="icon icon-xs icon-primary icon-round fa fa-instagram"></a></li>*@
+                        </ul>
+                    </div>
+                </nav>
+            </div>
+            <!-- END RD Navbar -->
+        </header>
+        <!--========================================================
+                                  CONTENT
+        =========================================================-->
+        <main class="page-content">
+            @RenderBody()
+        </main>
+        <!--========================================================
+                                  FOOTER
+        ==========================================================-->
+        <footer>
+            @RenderSection("footer", false)
+            <p class="text-center">&copy; @DateTime.Now.Year - Easy Flexibility</p>
+        </footer>
+    </div>
+
+    <div id="window_loading" class="modal-spinner">
+    </div>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap");
+    @Scripts.Render("~/bundles/site")
+    @Scripts.Render("~/bundles/modernizr")
+
+    @RenderSection("scripts", false)
+
+    <script type="text/javascript">
+        $(function () {
+            $("select.resize").resizeselect();
+
+            $.get({
+                url: "/api/admin/userrole"
+            }).done(function (data) {
+                if (data.Role != "User") {
+                    $("#menu_admin").show();
+                }
+            });
+        })
+    </script>
+
+    <a href="#" id="ui-to-top" class="ui-to-top fa fa-angle-up"></a>
+</body>
+</html>

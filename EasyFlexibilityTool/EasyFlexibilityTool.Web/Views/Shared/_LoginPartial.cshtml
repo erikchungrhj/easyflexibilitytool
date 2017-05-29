@@ -1,0 +1,32 @@
+﻿@using Microsoft.AspNet.Identity
+
+<li>
+    <a href="javascript:void(0);">Account</a>
+    <!-- RD Navbar Dropdown -->
+    <ul class="rd-navbar-dropdown">
+        @if (Request.IsAuthenticated)
+        {
+            <li>
+                @Html.ActionLink(User.Identity.GetUserName(), "Index", "Manage", null, new { title = "Manage" })
+            </li>
+            <li>
+                <a href="javascript:document.getElementById('logoutForm').submit()">Log off</a>
+            </li>
+            using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+            }
+        }
+        else
+        {
+            <li>
+                <!--@Html.ActionLink("Register", "Register", "Account", null, new {id = "registerLink"})-->
+                @Html.ActionLink("Register", "Index", "AngleMeasurement")
+            </li>
+            <li>
+                @Html.ActionLink("Log in", "Login", "Account", null, new { id = "loginLink" })
+            </li>
+        }
+    </ul>
+    <!-- END RD Navbar Dropdown -->
+</li>

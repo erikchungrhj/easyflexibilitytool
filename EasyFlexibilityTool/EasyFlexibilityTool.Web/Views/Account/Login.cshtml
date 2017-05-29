@@ -1,0 +1,57 @@
+﻿@using EasyFlexibilityTool.Web.ViewModels
+@model EasyFlexibilityTool.Web.ViewModels.LoginViewModel
+@{
+    ViewBag.Title = "Log In";
+}
+
+<section class="well-xs">
+    <div class="container relative">
+        <h2 class="relative text-center text-md-left wow fadeInLeft" style="visibility: visible; animation-name: fadeInLeft;">
+            @ViewBag.Title
+            <span class="devider devider-md devider-default devider-position-left devider-position-center-sm devider-position-bottom"></span>
+        </h2>
+
+        @using (Html.BeginForm("Login", "Account", new { ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "rd-mailform wow fadeInUp", style = "visibility: visible; animation-name: fadeInUp;" }))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(true, "")
+
+            <fieldset>
+                <label data-add-placeholder="" class="mfInput">
+                    @Html.EditorFor(m => m.Email, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.Email) } })
+                    @Html.ValidationMessageFor(m => m.Email)
+                </label>
+
+                <label data-add-placeholder="" class="mfInput">
+                    @Html.EditorFor(m => m.Password, new { htmlAttributes = new { placeholder = Html.DisplayNameFor(m => m.Password) } })
+                    @Html.ValidationMessageFor(m => m.Password)
+                </label>
+
+                <label data-add-placeholder="" class="mfInput">
+                    @Html.CheckBoxFor(m => m.RememberMe)
+                    <span class="mfPlaceHolder checkbox">@Html.DisplayNameFor(m => m.RememberMe)</span>
+                    @Html.ValidationMessageFor(m => m.RememberMe)
+                </label>
+
+                <div class="mfControls">
+                    <button class="link link-primary" type="submit">Log In</button>
+                </div>
+            </fieldset>
+
+            <div class="text-right">
+                <p>
+                    <!--@Html.ActionLink("Forgot your password?", "ForgotPassword", null, new {@class = "link link-primary"})-->
+                    @Html.ActionLink("Forgot your password?", "ForgotPassword")
+                </p>
+                <p>
+                    <!--@Html.ActionLink("Register as a new user", "Index", "AngleMeasurement", new { @class = "link link-primary" })-->
+                    @Html.ActionLink("Register", "Index", "AngleMeasurement")
+                </p>
+            </div>
+        }
+    </div>
+</section>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

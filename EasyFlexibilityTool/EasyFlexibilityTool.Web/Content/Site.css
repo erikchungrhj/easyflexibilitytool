@@ -1,0 +1,177 @@
+﻿.text-center {
+    text-align: center;
+}
+
+.validation-summary-errors, .field-validation-error {
+    color: #f00;
+}
+
+.field-validation-error {
+    position: absolute;
+    top: -4px;
+    padding-left: 1px;
+    right: 7px;
+    font-weight: inherit;
+    font-size: 15px;
+    line-height: 20px;
+    pointer-events: none;
+}
+
+.field-validation-valid {
+    display: none;
+}
+
+.modal {
+    width: auto;
+}
+
+#grid_leaderboard .jsgrid-grid-header, #grid_leaderboard .jsgrid-grid-body,
+#grid_angle_measurements .jsgrid-grid-header, #grid_angle_measurements .jsgrid-grid-body {
+    overflow-y: auto;
+}
+
+.fb-share-button {
+    -ms-transform: scale(1.75);
+    -webkit-transform: scale(1.75);
+    -o-transform: scale(1.75);
+    -moz-transform: scale(1.75);
+    transform: scale(1.75);
+    -ms-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    -moz-transform-origin: top left;
+    -webkit-transform-origin: top left;
+    transform-origin: top left;
+}
+
+.btn-facebook {
+    color: #fff;
+    background-color: #3b5998;
+    border-color: rgba(0,0,0,0.2);
+}
+
+    .btn-facebook:focus, .btn-facebook.focus {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook:hover {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook:active, .btn-facebook.active, .open > .dropdown-toggle.btn-facebook {
+        color: #fff;
+        background-color: #2d4373;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+        .btn-facebook:active:hover, .btn-facebook.active:hover, .open > .dropdown-toggle.btn-facebook:hover, .btn-facebook:active:focus, .btn-facebook.active:focus, .open > .dropdown-toggle.btn-facebook:focus, .btn-facebook:active.focus, .btn-facebook.active.focus, .open > .dropdown-toggle.btn-facebook.focus {
+            color: #fff;
+            background-color: #23345a;
+            border-color: rgba(0,0,0,0.2);
+        }
+
+    .btn-facebook:active, .btn-facebook.active, .open > .dropdown-toggle.btn-facebook {
+        background-image: none;
+    }
+
+    .btn-facebook.disabled, .btn-facebook[disabled], fieldset[disabled] .btn-facebook, .btn-facebook.disabled:hover, .btn-facebook[disabled]:hover, fieldset[disabled] .btn-facebook:hover, .btn-facebook.disabled:focus, .btn-facebook[disabled]:focus, fieldset[disabled] .btn-facebook:focus, .btn-facebook.disabled.focus, .btn-facebook[disabled].focus, fieldset[disabled] .btn-facebook.focus, .btn-facebook.disabled:active, .btn-facebook[disabled]:active, fieldset[disabled] .btn-facebook:active, .btn-facebook.disabled.active, .btn-facebook[disabled].active, fieldset[disabled] .btn-facebook.active {
+        background-color: #3b5998;
+        border-color: rgba(0,0,0,0.2);
+    }
+
+    .btn-facebook .badge {
+        color: #3b5998;
+        background-color: #fff;
+    }
+
+.rd-mailform input[type="checkbox"] {
+    border: 0;
+    -webkit-appearance: checkbox;
+    width: 30px;
+    height: 30px;
+}
+
+.mfPlaceHolder.checkbox {
+    padding: 0;
+    left: 40px;
+    top: -3px;
+}
+
+.toast-message {
+    font-size: 0.8em;
+    line-height: 1.7em;
+}
+
+ol.numbered-list {
+    list-style-type: decimal;
+}
+
+    ol.numbered-list li {
+        margin-bottom: 15px;
+    }
+
+.input-file {
+    font-family: Arial;
+    color: #ffffff;
+    font-size: 20px;
+    background: #3f88b8;
+    padding: 10px 20px 10px 20px;
+    text-decoration: none;
+}
+
+    .input-file:hover {
+        background: #3cb0fd;
+        background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+        background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+        background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+        background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+        background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+        text-decoration: none;
+    }
+
+.btn-default:disabled {
+    color: #737373;
+}
+
+.vertical-middle {
+    vertical-align: middle;
+}
+
+.blocker {
+    z-index: 20;
+}
+
+select {
+    border-top-color: initial;
+    border-top-style: initial;
+    border-top-width: 0;
+    border-right-color: initial;
+    border-right-style: initial;
+    border-right-width: 0;
+    border-left-color: initial;
+    border-left-style: initial;
+    border-left-width: 0;
+
+    font-weight: 300;
+    font-size: 25px;
+    width: 100%;
+    border-bottom: 1px solid #cccccc;
+}
+
+h2 select {
+    font-size: 70px;
+    line-height: 1.2;
+    width: auto;
+    text-transform: uppercase;
+    font-family: "Montserrat", sans-serif;
+    /*letter-spacing: -0.07em;*/
+    font-weight: 700;
+    border-bottom: 5px dashed #cccccc;
+}
+
+    h2 select option {
+        font-size: 40px;
+    }

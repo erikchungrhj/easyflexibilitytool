@@ -1,0 +1,284 @@
+﻿@using EasyFlexibilityTool.Web.Models
+
+@{
+    ViewBag.Title = "ManageUser";
+}
+
+<link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+<script src="~/Scripts/bootstrap.min.js"></script>
+
+<style>
+    .page-header {
+        margin: 0;
+    }
+
+    .page-title {
+        text-align: center;
+        font-size: 32px;
+        color: green;
+        border-radius: 4px;
+        border-style: solid;
+        border-width: 1px 1px 3px 1px;
+        border-color: darkseagreen;
+        margin-bottom: 30px;
+    }
+
+    .h2 {
+        text-transform: none;
+    }
+
+    .div-inline {
+        height: 30px;
+        margin-bottom: 10px;
+    }
+
+    .div-inline div {
+        float: left;
+        height: 30px;
+        margin-right: 10px;
+    }
+
+    #export_email {
+        text-decoration: none;
+        color: white;
+        background-color: #F0AD4E;
+        border-radius: 5px;
+        padding: 8px 20px 5px 20px;
+        margin-right:100px;
+        text-align: center;
+        display: inline-block;
+        font-size: 16px;
+    }
+
+    #export_email:hover {
+        background-color: #EC971F;
+    }
+
+    #sort_button{
+        margin-right:100px;
+    }
+</style>
+
+<div style="padding:20px;">
+    <p class="page-title">User Management</p>
+
+    <div class="div-inline">
+        <div>
+            <a id="export_email" href="ExportEmail">
+                <span class="glyphicon glyphicon-export"></span> Export Email
+            </a>
+        </div>
+
+        <div>
+            <label for="sorting_field" style="line-height:30px;">SortingField</label>
+        </div>
+        <div>
+            <select class="form-control" id="sorting_field" style="width:200px;">
+                <option value="@Html.IdFor(m => new LeaderboardItemModel().UserName)">User Name</option>
+                <option value="@Html.IdFor(m => new LeaderboardItemModel().Email)">Email</option>
+                <option value="@Html.IdFor(m => new LeaderboardItemModel().LastMeasurementDate)">Last Date</option>
+                <option value="@Html.IdFor(m => new LeaderboardItemModel().Progress)">Progress</option>
+            </select>
+        </div>
+        <div>
+            <button class="btn btn-primary" id="sort_button">Sort</button>
+        </div>
+
+        <div>
+            <label for="search_email" style="line-height:30px;">Search Email</label>
+        </div>
+        <div>
+            <input type="text" class="form-control" id="search_email" />
+        </div>
+        <div>
+            <button class="btn btn-primary" id="search_button">Search</button>
+        </div>
+    </div>
+
+    <div>
+        <div id="user_grid"></div>
+    </div>
+</div>
+
+<div id="modal_photo" style="display:none;">
+    <img id="img_modal_photo" />
+</div>
+
+@section scripts
+{
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script type="text/javascript">
+        $("#sort_button").click(function () {
+            $("#user_grid").jsGrid("sort", $("#sorting_field").val());
+        });
+
+        $("#search_button").click(function () {
+            var searchingEmail = $("#search_email").val();
+            $("#user_grid").jsGrid("loadData", { Email: searchingEmail });
+        });
+
+        $(function() {
+            $('#user_grid').jsGrid({
+                width: '100%',
+                autoload: true,
+                paging: true,
+                pageSize: 10,
+                pageButtonCount: 10,
+
+                deleteConfirm: function (item) {
+                    return "Do you really want to delete <" + item.UserName + ">?";
+                },
+
+                controller: {
+                    loadData: function (filter) {
+                        var deferred = $.Deferred();
+                        $.get({
+                            url: '/api/admin',
+                            data: filter,
+                            dataType: 'json'
+                        }).done(function (result) {
+                            if (filter.Email != undefined) {
+                                result = $.grep(result, function (item) {
+                                    return item.Email.includes(filter.Email);
+                                });
+                            }
+                            deferred.resolve(result);
+                        });
+                        return deferred.promise();
+                    },
+                    deleteItem: function (item) {
+                        showWaitingWindow();
+                        return $.ajax({
+                            url: "/api/admin/delete?email=" + item.Email,
+                            type: "POST"
+                        }).done(function (data) {
+                            if (data) {
+                                showSuccessNotification(data.UserName + " Deleted Successfully");
+                            } else {
+                                showErrorNotification("Unspecified Error Has Been Occurred");
+                            }
+                        }).fail(function (data) {
+                            showErrorNotification((data.responseJSON && data.responseJSON.Message) || data.statusText);
+                        }).always(function () {
+                            hideWaitingWindow();
+                        });
+                    }
+                },
+
+                fields: [
+                    {
+                        name: 'Position',
+                        title: '#',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 20,
+                        itemTemplate: function(value, model) {
+                            return '<span>' + (this._grid.data.indexOf(model) + 1) + '</span>';
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().UserName)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().UserName)',
+                        type: 'text',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            return "<span style='word-wrap: break-word;'>" + value + "</span>";
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().Email)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().Email)',
+                        type: 'text',
+                        autosearch: true,
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 150,
+                        itemTemplate: function (value, model) {
+                            return "<span style='word-wrap: break-word;'>" + value + "</span>";
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().FirstMeasurement.Angle).ToString().Replace("_", ".")',
+                        title: 'First',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 100,
+                        itemTemplate: function(value, model) {
+                            var dateTime = moment(new Date(model.@Html.IdFor(m => new LeaderboardItemModel().FirstMeasurement.DateTimeStamp).ToString().Replace("_", "."))).format('LL');
+                            if (dateTime == "January 1, 0001") {
+                                return "";
+                            }
+                            return "<b>" + value + "</b>&nbsp;&nbsp;<em>(" + dateTime + ")</em>";
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().BestMeasurement.Angle).ToString().Replace("_", ".")',
+                        title: 'Best',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 100,
+                        itemTemplate: function (value, model) {
+                            var dateTime = moment(new Date(model.@Html.IdFor(m => new LeaderboardItemModel().BestMeasurement.DateTimeStamp).ToString().Replace("_", "."))).format('LL');
+                            if (dateTime == "January 1, 0001") {
+                                return "";
+                            }
+                            return "<b>" + value + "</b>&nbsp;&nbsp;<em>(" + dateTime + ")</em>";
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().LastMeasurementDate)',
+                        title: "Last Measurement Date",
+                        type: 'text',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 100,
+                        itemTemplate: function (value, model) {
+                            var dateTime = moment(new Date(model.@Html.IdFor(m => new LeaderboardItemModel().LastMeasurementDate))).format('LL');
+                            if (dateTime == "January 1, 0001") {
+                                return "";
+                            }
+                            return dateTime;
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().Progress)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().Progress)',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 60,
+                        itemTemplate: function(value) {
+                            return '<span>' + Math.round(value * 100) / 100 + '&deg;</span>';
+                        }
+                    }, {
+                        name: '@Html.IdFor(m => new LeaderboardItemModel().RewardPoints)',
+                        title: '@Html.DisplayNameFor(m => new LeaderboardItemModel().RewardPoints)',
+                        type: 'number',
+                        align: 'center',
+                        css: 'vertical-middle',
+                        width: 60,
+                        itemTemplate: function(value) {
+                            return '<span>' + Math.round(value * 100) / 100 + '</span>';
+                        }
+                    }, {
+                        type: "control",
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 20,
+                        editButton: false
+                    }, {
+                        align: "center",
+                        css: "vertical-middle",
+                        width: 20,
+                        itemTemplate: function (value, model) {
+                            return $("<a/>", {
+                                html: "<span class='glyphicon glyphicon-list' style='color:green' />",
+                                href: "UserProfile?userId=" + model.UserId
+                            });
+                        }
+                    }
+                ]
+            });
+        });
+    </script>
+}
